@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindMaze - Instructions</title>
+    <style>
+        body {
+            font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+            background: radial-gradient(circle, #2c003e 30%, #0f0020 90%);
+            color: white;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 90vh; /* Reduced height to avoid overflow */
+            overflow: hidden;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 5rem;
+            text-transform: uppercase;
+            text-shadow: 0 0 40px #ffdd44, 0 0 80px #ff8800;
+            margin-bottom: 30px; /* Increased space */
+        }
+
+        .instructions {
+            font-size: 1.5rem;
+            max-width: 800px;
+            text-align: left;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(255, 140, 0, 0.8);
+            margin-top: 20px; /* Space between heading and card */
+        }
+
+        .button-container {
+            margin-top: 30px;
+            margin-bottom: 40px; /* Added bottom space to prevent overlap */
+        }
+
+        .button {
+            font-size: 1.5rem;
+            padding: 12px 30px;
+            margin: 10px;
+            background: linear-gradient(45deg, #1e90ff, #ff1493);
+            border: none;
+            border-radius: 15px;
+            color: white;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-weight: bold;
+            transition: all 0.3s ease-in-out;
+            animation: glowButton 2s infinite alternate;
+        }
+
+        @keyframes glowButton {
+            0% { box-shadow: 0 0 10px #1e90ff, 0 0 20px #ff1493; }
+            100% { box-shadow: 0 0 20px #ff1493, 0 0 30px #1e90ff; }
+        }
+
+        .button:hover {
+            transform: scale(1.1);
+            background: linear-gradient(45deg, #ff1493, #1e90ff);
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 4rem;
+            }
+            .instructions {
+                font-size: 1.2rem;
+                padding: 15px;
+            }
+            .button {
+                font-size: 1.2rem;
+                padding: 10px 25px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 3rem;
+            }
+            .instructions {
+                font-size: 1rem;
+                padding: 10px;
+            }
+            .button {
+                font-size: 1rem;
+                padding: 8px 20px;
+            }
+            .button-container {
+                margin-bottom: 50px; /* Extra space on smaller screens */
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Game Instructions</h1>
+    <div class="instructions">
+        <p>1. <b>Memorize</b> the 9 images and their positions in <b>15 seconds</b>.</p>
+        <p>2. A countdown of <b>3...2...1... Go!</b> will start.</p>
+        <p>3. An <b>empty 3x3 grid</b> appears with images placed <b>above</b> it.</p>
+        <p>4. <b>Drag and drop</b> each image into its correct position within <b>30 seconds</b>.</p>
+        <p>5. <b>Win the game</b> by placing all images correctly before time runs out! 🎉</p>
+    </div>
+    <div class="button-container">
+        <button class="button" onclick="window.location.href='grid.html';">Let's Go</button>
+    </div>
+</body>
+</html>

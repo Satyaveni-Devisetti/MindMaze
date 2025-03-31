@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Review Your Match</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: radial-gradient(circle, #2c003e 30%, #0f0020 90%);
+            color: white;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            height: 100vh;
+            overflow: auto;
+        }
+
+        h1 {
+            margin-top: 10px;
+            font-size: 2.2vw;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            gap: 50px;
+            margin-top: 20px;
+        }
+        .back-button {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            padding: 8px 16px;
+            background-color: orange;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 5px;
+            width: 50vw;
+            max-width: 500px;
+            column-gap: 10px;
+        }
+
+        .grid div {
+            width: 100%;
+            aspect-ratio: 1/1;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid orange;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            font-size: 1.5rem;
+        }
+
+        .grid div img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 6px;
+        }
+
+        .grid-container {
+            text-align: center;
+        }
+
+        .grid-container h2 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .correct {
+            border: 2px solid green;
+        }
+
+        .incorrect {
+            border: 2px solid red;
+        }
+        .container {
+          display: flex;
+          justify-content: center;
+          gap: 50px;
+          margin-top: 20px;
+          flex-wrap: wrap;
+      }
+      
+      /* Stacking grids vertically for small screens (tablets, mobiles) */
+      @media (max-width: 768px) {
+          .container {
+              flex-direction: column;
+              align-items: center;
+              gap: 30px;
+          }
+          .grid{
+            width: 100vw;
+            max-width: 680px;
+          }
+          .grid div {
+            font-size: 50px; /* Adjust text size */
+        }
+        
+      }
+      @media (max-width: 468px) {
+        .container {
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        .grid{
+          width: 70vw;
+          max-width: 680px;
+        }
+        .grid div {
+          font-size: 50px; /* Adjust text size */
+      }
+    }
+      
+    </style>
+</head>
+<body>
+    
+    <!-- <h1>Review Your Grid</h1> -->
+    <button class="back-button" onclick="goBack()">Back</button>
+
+    <div class="container">
+        <!-- User Matched Grid -->
+        <div class="grid-container">
+            <h2>Your Grid</h2>
+            <div class="grid" id="userGrid"></div>
+        </div>
+
+        <!-- Correct Grid -->
+        <div class="grid-container">
+            <h2>Correct Grid</h2>
+            <div class="grid" id="correctGrid"></div>
+        </div>
+    </div>
+
+    <script>
+        function goBack() {
+            window.location.href = "result.html";
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            // Retrieve user-matched grid from localStorage (mg.html)
+            const userMatchedGrid = JSON.parse(localStorage.getItem("userMatchedGrid")) || [];
+            // Retrieve correct grid from localStorage (grid.html)
+            const correctGrid = JSON.parse(localStorage.getItem("correctImages")) || [];
+    
+            // Get grid containers
+            const userGridContainer = document.getElementById("userGrid");
+            const correctGridContainer = document.getElementById("correctGrid");
+    
+            // Clear previous content
+            userGridContainer.innerHTML = "";
+            correctGridContainer.innerHTML = "";
+    
+            for (let i = 0; i < 9; i++) {
+                // User's Grid
+                const userCell = document.createElement("div");
+                userGridContainer.appendChild(userCell);
+    
+                // Correct Grid
+                const correctCell = document.createElement("div");
+                correctGridContainer.appendChild(correctCell);
+    
+                // Placing user's images in correct positions
+                if (userMatchedGrid[i] !== null && userMatchedGrid[i] !== undefined) {
+                    const img = document.createElement("img");
+                    img.src = userMatchedGrid[i];
+                    userCell.appendChild(img);
+                }
+    
+                // Placing correct images in correct grid
+                if (correctGrid[i] !== null && correctGrid[i] !== undefined) {
+                    const img = document.createElement("img");
+                    img.src = correctGrid[i];
+                    correctCell.appendChild(img);
+                }
+    
+                // Mark correct and incorrect placements
+                if (userMatchedGrid[i] === correctGrid[i]) {
+                    userCell.classList.add("correct"); // Green border for correct placement
+                } else {
+                    userCell.classList.add("incorrect"); // Red border for incorrect placement
+                }
+            }
+        });
+    
+
+       
+    </script>
+
+</body>
+</html>

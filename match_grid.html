@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindMaze - Match Grid</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background: radial-gradient(circle, #2c003e 30%, #0f0020 90%);
+            color: white;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            height: 100vh;
+            overflow: auto;
+        }
+        
+        h1 {
+            margin-top: 10px;
+            font-size: 2.2vw;
+        }
+        
+        #timer {
+            font-size: 1.8vw;
+            margin-bottom: 10px;
+            color: yellow;
+        }
+        
+        .game-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            width: 90vw;
+            max-width: 600px;
+            padding-bottom: 20px;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 5px;
+            width: 50vw;
+            max-width: 400px;
+        }
+        
+        .grid div {
+            width: 100%;
+            aspect-ratio: 1/1;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid orange;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        
+        .grid div img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 6px;
+        }
+        
+        .outside-images {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 5px;
+            width: 400px;
+            height: 130px;
+            position: relative;
+        }
+        
+        .outside-images img {
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 6px;
+            cursor: grab;
+        }
+        
+        .error-message {
+            display: none;
+            color: red;
+            font-size: 1.2rem;
+            margin-top: 10px;
+        }
+        
+        #game-over {
+            display: none;
+            font-size: 2rem;
+            color: red;
+            margin-top: 20px;
+        }
+
+        /* Styles for tablets (screens between 601px and 1024px) */
+        @media screen and (min-width: 601px) and (max-width: 1024px) {
+            .grid {
+                width: 100vw;
+                max-width: 590px; /* Increase width for better visibility */
+            }
+            .outside-images {
+                width: 580px;
+                height: 300px; /* Increase size for better visibility */
+            }
+            .outside-images img {
+                width: 190px;
+                height: 130px;
+                margin: 5px;
+            }
+        }
+
+        /* Styles for mobile devices (screens up to 600px) */
+        @media screen and (max-width: 600px) {
+            .grid {
+                width: 95vw;
+                max-width: 650px;
+            }
+            .outside-images {
+                width: 450px;
+                height: 150px;
+            }
+            .outside-images img {
+                width: 150px;
+                height: 150px;
+            }
+        }
+
+
+        
+        /* Styles for small screens (mobile view) */
+        @media screen and (max-width: 480px) {
+            .grid {
+                width: 92vw;
+                max-width: 280px;
+            }
+            .outside-images {
+                width: 300px;
+                height: 100px;
+            }
+            .outside-images img {
+                width: 90px;
+                height: 90px;
+            }
+            #timer{
+              font-size: 1.1rem;
+            }
+        }
+
+        /* Styles for large screens (1024px and above) */
+        @media screen and (min-width: 1024px) {
+            .container {
+                display: flex;  /* Arrange children side by side */
+                justify-content: space-between; /* Space between elements */
+                align-items: center; /* Align items vertically */
+                gap: 20px; /* Space between grid and images */
+            }
+            
+            .grid {
+                flex: 1; /* Allow flexible width */
+                max-width: 63%; /* Limit max width to half */
+            }
+            
+            .outside-images {
+                flex: 1; /* Allow flexible width */
+                max-width: 50%; /* Limit max width to half */
+                display: flex;
+                justify-content: center; /* Center images horizontally */
+                gap: 10px; /* Space between images */
+            }
+            
+            .outside-images img {
+                width: 130px; /* Adjust image size */
+                height: 130px;
+            }
+        }
+        /* Highlight selected image */
+        .selected {
+            box-shadow: 0px 0px 10px 4px rgba(255, 255, 0, 0.8);
+            border: 2px solid yellow;
+        }
+
+        /* Remove box shadow when placed into the grid */
+        .grid div img {
+            box-shadow: none !important;
+            border: none !important;
+        }
+
+
+
+          
+    </style>
+</head>
+<body>
+
+    <h1>Match the Grid</h1>
+    <div id="timer">Time Left: <span id="time">30</span>s</div>
+    <div class="game-container">
+        <div class="grid" id="grid">
+            <div data-slot="1"></div>
+            <div data-slot="2"></div>
+            <div data-slot="3"></div>
+            <div data-slot="4"></div>
+            <div data-slot="5"></div>
+            <div data-slot="6"></div>
+            <div data-slot="7"></div>
+            <div data-slot="8"></div>
+            <div data-slot="9"></div>
+        </div>
+        <div class="outside-images" id="outsideImages"></div>
+        <p class="error-message" id="errorMessage">❌ Slot already occupied!</p>
+        <p id="game-over"></p>
+    </div>
+
+    <script>
+        // Retrieve selected images from localStorage
+        const storedImages = JSON.parse(localStorage.getItem("selectedImages")) || [];
+        const images = storedImages.length ? storedImages : [
+            "images/img1.jpg", "images/img2.jpg", "images/img3.jpg",
+            "images/img4.jpg", "images/img5.jpg", "images/img6.jpg",
+            "images/img7.jpg", "images/img8.jpg", "images/img9.jpg"
+        ];
+
+        const shuffledImages = images.sort(() => Math.random() - 0.5);
+        const outsideImagesContainer = document.getElementById("outsideImages");
+        
+        let selectedImage = null;
+        shuffledImages.forEach((src, index) => {
+            const img = document.createElement("img");
+            img.src = src;
+            img.draggable = true;
+            img.dataset.correctSlot = index + 1;
+            img.id = `drag${index}`;
+            img.addEventListener("dragstart", dragStart);
+            img.addEventListener("touchstart", touchSelect);
+            outsideImagesContainer.appendChild(img);
+        });
+
+        function dragStart(event) {
+            event.dataTransfer.setData("text", event.target.id);
+        }
+
+        function touchSelect(event) {
+            event.preventDefault();
+            document.querySelectorAll(".outside-images img").forEach(img => img.classList.remove("selected"));
+            selectedImage = event.target;
+            selectedImage.classList.add("selected");
+        }
+
+        document.querySelectorAll(".grid div").forEach(cell => {
+            cell.addEventListener("dragover", dragOver);
+            cell.addEventListener("drop", drop);
+            cell.addEventListener("click", touchDrop);
+            cell.addEventListener("touchstart", touchDrop);
+        });
+
+        function dragOver(event) {
+            event.preventDefault();
+        }
+
+        function drop(event) {
+            event.preventDefault();
+            const imgId = event.dataTransfer.getData("text");
+            const draggedImage = document.getElementById(imgId);
+            placeImage(draggedImage, event.target);
+
+            if (event.target.tagName === "DIV" && !event.target.hasChildNodes()) {
+                event.target.appendChild(draggedImage);
+                document.getElementById("errorMessage").style.display = "none";
+            } else {
+                document.getElementById("errorMessage").style.display = "block";
+                setTimeout(() => {
+                    document.getElementById("errorMessage").style.display = "none";
+                }, 2000);
+            }
+        }
+
+        function touchDrop(event) {
+            event.preventDefault();
+            if (selectedImage) placeImage(selectedImage, event.target);
+        }
+
+        function placeImage(image, targetSlot) {
+            if (targetSlot.tagName === "DIV" && !targetSlot.hasChildNodes()) {
+                targetSlot.appendChild(image);
+                document.getElementById("errorMessage").style.display = "none";
+                selectedImage = null;
+                document.querySelectorAll(".outside-images img").forEach(img => img.classList.remove("selected"));
+            } else {
+                document.getElementById("errorMessage").style.display = "block";
+                setTimeout(() => { document.getElementById("errorMessage").style.display = "none"; }, 2000);
+            }
+        }
+
+
+
+        let timeLeft = 30; // Set timer
+        const timerDisplay = document.getElementById("time");
+        const gameOverMessage = document.getElementById("game-over");
+
+        // Initialize an array of 9 null values
+        let userMatchedGrid = Array(9).fill(null);
+
+        const timer = setInterval(() => {
+            if (timeLeft > 0) {
+                timeLeft--;
+                timerDisplay.textContent = timeLeft;
+            } else {
+                clearInterval(timer);
+                checkResults(); // Call function when timer runs out
+            }
+        }, 1000);
+
+        function drop(event) {
+            event.preventDefault();
+            const imgId = event.dataTransfer.getData("text");
+            const draggedImage = document.getElementById(imgId);
+            const targetSlot = event.target;
+
+            if (targetSlot.tagName === "DIV" && !targetSlot.hasChildNodes()) {
+                targetSlot.appendChild(draggedImage);
+                document.getElementById("errorMessage").style.display = "none";
+
+                // Get the grid slot index (1-based, so subtract 1 for 0-based index)
+                const slotIndex = parseInt(targetSlot.dataset.slot) - 1;
+                userMatchedGrid[slotIndex] = draggedImage.src; // Store the dropped image src
+            } else {
+                document.getElementById("errorMessage").style.display = "block";
+                setTimeout(() => {
+                    document.getElementById("errorMessage").style.display = "none";
+                }, 2000);
+            }
+        }
+
+        function checkResults() {
+            // Store the final user dropped images, with null for empty slots
+            localStorage.setItem("userMatchedGrid", JSON.stringify(userMatchedGrid));
+            let score = 0;
+            const storedImages = JSON.parse(localStorage.getItem("selectedImages")) || [];
+
+            // Select all grid cells properly
+            const gridCells = document.querySelectorAll(".grid div");
+
+            gridCells.forEach((cell, index) => {
+                if (cell.firstChild && cell.firstChild.tagName === "IMG") {
+                    const placedImageSrc = cell.firstChild.src.split("/").pop();  // Extract filename
+                    const correctImageSrc = storedImages[index]?.split("/").pop(); // Extract filename safely
+
+                    if (placedImageSrc === correctImageSrc) {
+                        score++;
+                    }
+                }
+            });
+
+            localStorage.setItem("finalScore",score)
+
+            // Delay before redirection (2 seconds)
+            setTimeout(() => {
+                window.location.href = "result.html";
+            }, 2000);
+        }
+
+        document.getElementById("game-over").style.display = "block";
+        document.querySelector(".buttons").style.display = "flex"; 
+
+
+        
+    </script>
+</body>
