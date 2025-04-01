@@ -130,64 +130,74 @@
             window.location.href = "result.html";
         }
 
+        // Function to normalize URLs (removes trailing slashes, makes lowercase, etc.)
+        function normalizeURL(url) {
+            if (!url) return "";
+            // Remove query parameters or fragments if necessary
+            const urlObj = new URL(url, window.location.origin);
+            return urlObj.pathname.trim().toLowerCase();  // Only compare the path (file name)
+        }
+
         document.addEventListener("DOMContentLoaded", function () {
             const userMatchedGrid = JSON.parse(localStorage.getItem("userMatchedGrid")) || [];
             const correctGrid = JSON.parse(localStorage.getItem("correctImages")) || [];
-        
+
             const userGridContainer = document.getElementById("userGrid");
             const correctGridContainer = document.getElementById("correctGrid");
-        
+
             userGridContainer.innerHTML = "";
             correctGridContainer.innerHTML = "";
-        
+
             for (let i = 0; i < 9; i++) {
                 const userCell = document.createElement("div");
-                userCell.style.position = "relative"; 
+                userCell.style.position = "relative";
                 userGridContainer.appendChild(userCell);
-        
+
                 const correctCell = document.createElement("div");
                 correctGridContainer.appendChild(correctCell);
-        
+
                 let userImg = null;
                 if (userMatchedGrid[i]) {
                     userImg = document.createElement("img");
                     userImg.src = userMatchedGrid[i];
                     userCell.appendChild(userImg);
                 }
-        
+
                 let correctImg = null;
                 if (correctGrid[i]) {
                     correctImg = document.createElement("img");
                     correctImg.src = correctGrid[i];
                     correctCell.appendChild(correctImg);
                 }
-        
-                // Add a status icon (green tick or red cross)
+
+                // Add a status icon (green tick ✅ or red cross ❌)
                 const statusIcon = document.createElement("span");
                 statusIcon.style.position = "absolute";
                 statusIcon.style.bottom = "5px";
                 statusIcon.style.right = "5px";
-                statusIcon.style.fontSize = "1.5rem";
-        
-                // Normalize URLs using `new URL()`
-                let userImgURL = userMatchedGrid[i] ? new URL(userMatchedGrid[i], window.location.origin).href : "";
-                let correctImgURL = correctGrid[i] ? new URL(correctGrid[i], window.location.origin).href : "";
-        
+                statusIcon.style.fontSize = "1.8rem";
+                statusIcon.style.backgroundColor = "rgba(0, 0, 0, 0.6)";
+                statusIcon.style.padding = "5px";
+                statusIcon.style.borderRadius = "50%";
+                statusIcon.style.color = "white";
+
+                // Normalize URLs before comparison
+                let userImgURL = normalizeURL(userMatchedGrid[i]);
+                let correctImgURL = normalizeURL(correctGrid[i]);
+
+                // Debugging: Output the URLs being compared
+                console.log(`Comparing URLs: user=${userImgURL} correct=${correctImgURL}`);
+
                 if (userImgURL === correctImgURL) {
-                    statusIcon.innerHTML = "✅"; // Green tick
+                    statusIcon.innerHTML = "✅"; // Green tick for correct match
                 } else {
-                    statusIcon.innerHTML = "❌"; // Red cross
+                    statusIcon.innerHTML = "❌"; // Red cross for incorrect match
                 }
-        
+
                 userCell.appendChild(statusIcon);
             }
         });
-        
-        
-        
-    
-
-       
+   
     </script>
 
 </body>
