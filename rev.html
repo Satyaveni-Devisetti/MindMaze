@@ -133,19 +133,10 @@
         // Function to normalize URLs (removes trailing slashes, makes lowercase, etc.)
         function normalizeURL(url) {
             if (!url) return "";
-            
-            try {
-                // Convert to a standard URL object
-                const urlObj = new URL(url, window.location.origin);
-                
-                // Normalize by removing query parameters and making it lowercase
-                return urlObj.pathname.replace(/\/$/, "").toLowerCase();  
-            } catch (e) {
-                console.error("Invalid URL:", url);
-                return url.toLowerCase().trim();
-            }
+            // Remove query parameters or fragments if necessary
+            const urlObj = new URL(url, window.location.origin);
+            return urlObj.pathname.trim().toLowerCase();  // Only compare the path (file name)
         }
-        
 
         document.addEventListener("DOMContentLoaded", function () {
             const userMatchedGrid = JSON.parse(localStorage.getItem("userMatchedGrid")) || [];
@@ -197,12 +188,11 @@
                 // Debugging: Output the URLs being compared
                 console.log(`Comparing URLs: user=${userImgURL} correct=${correctImgURL}`);
 
-                if (userImgURL.endsWith(correctImgURL)) {
-                    statusIcon.innerHTML = "✅"; 
+                if (userImgURL === correctImgURL) {
+                    statusIcon.innerHTML = "✅"; // Green tick for correct match
                 } else {
-                    statusIcon.innerHTML = "❌"; 
+                    statusIcon.innerHTML = "❌"; // Red cross for incorrect match
                 }
-                
 
                 userCell.appendChild(statusIcon);
             }
