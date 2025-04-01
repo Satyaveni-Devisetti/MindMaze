@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Review Your Match</title>
+    <title>Review Your Matches</title>
+    <link rel="icon" type="image/png" href="icon.png">
     <style>
         body {
             font-family: Arial, sans-serif;
-            background: radial-gradient(circle, #2c003e 30%, #0f0020 90%);
+            background: radial-gradient(circle, rgb(44, 0, 62) 30%, rgb(15, 0, 32) 90%);
             color: white;
             text-align: center;
             display: flex;
@@ -79,14 +80,6 @@
             font-size: 1.5rem;
             margin-bottom: 10px;
         }
-
-        .correct {
-            border: 2px solid green;
-        }
-
-        .incorrect {
-            border: 2px solid red;
-        }
         .container {
           display: flex;
           justify-content: center;
@@ -138,50 +131,60 @@
         }
 
         document.addEventListener("DOMContentLoaded", function () {
-            // Retrieve user-matched grid from localStorage (mg.html)
             const userMatchedGrid = JSON.parse(localStorage.getItem("userMatchedGrid")) || [];
-            // Retrieve correct grid from localStorage (grid.html)
             const correctGrid = JSON.parse(localStorage.getItem("correctImages")) || [];
-    
-            // Get grid containers
+        
             const userGridContainer = document.getElementById("userGrid");
             const correctGridContainer = document.getElementById("correctGrid");
-    
-            // Clear previous content
+        
             userGridContainer.innerHTML = "";
             correctGridContainer.innerHTML = "";
-    
+        
             for (let i = 0; i < 9; i++) {
-                // User's Grid
                 const userCell = document.createElement("div");
+                userCell.style.position = "relative"; 
                 userGridContainer.appendChild(userCell);
-    
-                // Correct Grid
+        
                 const correctCell = document.createElement("div");
                 correctGridContainer.appendChild(correctCell);
-    
-                // Placing user's images in correct positions
-                if (userMatchedGrid[i] !== null && userMatchedGrid[i] !== undefined) {
-                    const img = document.createElement("img");
-                    img.src = userMatchedGrid[i];
-                    userCell.appendChild(img);
+        
+                let userImg = null;
+                if (userMatchedGrid[i]) {
+                    userImg = document.createElement("img");
+                    userImg.src = userMatchedGrid[i];
+                    userCell.appendChild(userImg);
                 }
-    
-                // Placing correct images in correct grid
-                if (correctGrid[i] !== null && correctGrid[i] !== undefined) {
-                    const img = document.createElement("img");
-                    img.src = correctGrid[i];
-                    correctCell.appendChild(img);
+        
+                let correctImg = null;
+                if (correctGrid[i]) {
+                    correctImg = document.createElement("img");
+                    correctImg.src = correctGrid[i];
+                    correctCell.appendChild(correctImg);
                 }
-    
-                // Mark correct and incorrect placements
-                if (userMatchedGrid[i] === correctGrid[i]) {
-                    userCell.classList.add("correct"); // Green border for correct placement
+        
+                // Add a status icon (green tick or red cross)
+                const statusIcon = document.createElement("span");
+                statusIcon.style.position = "absolute";
+                statusIcon.style.bottom = "5px";
+                statusIcon.style.right = "5px";
+                statusIcon.style.fontSize = "1.5rem";
+        
+                // Normalize URLs using `new URL()`
+                let userImgURL = userMatchedGrid[i] ? new URL(userMatchedGrid[i], window.location.origin).href : "";
+                let correctImgURL = correctGrid[i] ? new URL(correctGrid[i], window.location.origin).href : "";
+        
+                if (userImgURL === correctImgURL) {
+                    statusIcon.innerHTML = "✅"; // Green tick
                 } else {
-                    userCell.classList.add("incorrect"); // Red border for incorrect placement
+                    statusIcon.innerHTML = "❌"; // Red cross
                 }
+        
+                userCell.appendChild(statusIcon);
             }
         });
+        
+        
+        
     
 
        

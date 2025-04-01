@@ -13,7 +13,7 @@
         
         body {
             font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
-            background: radial-gradient(circle, #2c003e 30%, #0f0020 90%);
+            background: radial-gradient(circle, rgb(44, 0, 62) 30%, rgb(15, 0, 32) 90%);
             color: white;
             text-align: center;
             display: flex;
@@ -108,7 +108,7 @@
 </head>
 <body>
     <div class="container">
-        <div class="timer" id="timer">15</div>
+        <div class="timer" id="timer">10</div>
         
         <div class="grid" id="grid">
             <div><img id="img1" src="" alt="Puzzle Image"></div> 
@@ -128,7 +128,7 @@
     <div class="countdown-screen" id="countdownScreen">3</div>
 
     <script>
-        let timeLeft = 15;
+        let timeLeft = 10;
         const timerElement = document.getElementById("timer");
         const gridElement = document.getElementById("grid");
         const matchButton = document.getElementById("matchButton");
@@ -169,10 +169,10 @@
         });
 
         // Generate shuffled image list
-        const imageList = Array.from({ length: 105 }, (_, i) => `images/img${i + 1}.jpg`);
+        const imageList = Array.from({ length: 90 }, (_, i) => `images/img${i + 1}.jpg`);
         const shuffledImages = imageList.sort(() => Math.random() - 0.5).slice(0, 9);
 
-        // Store selected images in localStorage for mg.html
+        // Store selected images in localStorage for match_grid.html
         localStorage.setItem("selectedImages", JSON.stringify(shuffledImages));
 
         // Assign images correctly
